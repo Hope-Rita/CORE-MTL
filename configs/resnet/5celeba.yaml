@@ -1,0 +1,30 @@
+data:
+  type: "celeba"
+  dataset_path: "../mtl_dataset/celeba/"
+  batch_size: 256
+  num_workers: 8
+  img_size: [128, 128]
+  pin_memory: true
+  num_attributes: 10
+
+model:
+  type: "causal_celeba"
+  pretrained: true
+  latent_dim_s: 1024
+  latent_dim_p: 64
+  num_attributes: 10
+
+training:
+  seed: 2024
+  epochs: 50
+  optimizer: "AdamW"
+  learning_rate: 0.0002
+  weight_decay: 0.0001
+  enable_training: true
+
+losses:
+  lambda_attr: 1.0
+  beta_recon_app: 5.0
+  lambda_l1_recon: 1.0
+  enable_lpips: true
+  lambda_independence: 0.5

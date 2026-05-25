@@ -1,0 +1,70 @@
+data:
+  type: "nyuv2"
+  dataset_path: "../mtl_dataset/nyuv2"
+  batch_size: 16
+  num_workers: 4
+  img_size: [288, 384]
+  augmentation: True
+
+model:
+  type: "causal"
+  encoder_name: "resnet50"
+  pretrained: True
+
+  latent_dim_s: 512
+  latent_dim_p: 256
+  z_s_bottleneck_noise: 0.1
+
+  decomposition:
+    enabled: true
+    normal_head_hidden: 128
+    albedo_head_hidden: 128
+    light_head:
+      sh_degree: 2
+      grayscale_prior: false
+
+training:
+  seed: 2024
+  epochs: 100
+  optimizer: "AdamW"
+  learning_rate: 0.0002
+  weight_decay: 0.0001
+
+  stage0_epochs: 5
+  stage1_epochs: 0
+  ind_warmup_epochs: 10
+
+  lr_scheduler:
+    type: "cosine"
+    warmup_epochs: 5
+    min_lr_factor: 0.01
+
+  cfa:
+    enabled: true
+    start_epoch: 20
+    cka_threshold: 0.1
+    prob: 0.5
+    lambda_cfa: 1.0
+    mix_strategy: "global"
+
+losses:
+  lambda_seg: 20.0
+  lambda_depth: 10.0
+  lambda_normal: 10.0
+  lambda_edge_consistency: 0.1
+
+
+  lambda_independence: 1.0
+
+
+  alpha_recon_geom: 2.0
+
+
+  beta_recon_app: 15.0
+  lambda_l1_recon: 2.0
+
+  # === 4. 物理分解与先验 ===
+  lambda_img: 2.0
+  lambda_alb_tv: 0.1
+  lambda_sh_gray: 0.001
+  lambda_xcov: 0.5

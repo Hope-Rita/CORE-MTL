@@ -1,0 +1,67 @@
+data:
+  type: "cityscapes2cityscapes_c"
+  train_dataset_path: "../mtl_dataset/cityscape_preprocess"
+  cc_dataset_path: "../mtl_dataset/cityscapes_c"
+  original_gt_path: "../mtl_dataset/cityscape_preprocess"
+  batch_size: 16
+  num_workers: 4
+  img_size: [128, 256]
+  pin_memory: true
+
+model:
+  type: "causal"
+  encoder_name: "resnet50"
+  pretrained: True
+  num_seg_classes: 7
+  latent_dim_s: 1024
+  latent_dim_p: 64
+  z_s_bottleneck_noise: 0.1
+
+  decomposition:
+    enabled: true
+    normal_head_hidden: 128
+    albedo_head_hidden: 128
+    light_head:
+      sh_degree: 2
+      grayscale_prior: true
+
+training:
+  seed: 2024
+  epochs: 100
+  optimizer: "AdamW"
+  learning_rate: 0.0002
+  weight_decay: 0.0001
+
+  stage0_epochs: 10
+  stage1_epochs: 5
+  ind_warmup_epochs: 20
+
+  lr_scheduler:
+    type: "cosine"
+    warmup_epochs: 5
+    min_lr_factor: 0.01
+
+  cfa:
+    enabled: true
+    start_epoch: 1
+    cka_threshold: 0.1
+    prob: 0.5
+    lambda_cfa: 1.0
+    mix_strategy: "global"
+
+losses:
+  lambda_seg: 10.0
+  lambda_depth: 20.0
+  lambda_normal: 0.0
+  lambda_edge_consistency: 0.1
+
+  lambda_independence: 1.0
+
+  alpha_recon_geom: 2.0
+  beta_recon_app: 5.0
+  lambda_l1_recon: 2.0
+
+  lambda_img: 5.0
+  lambda_alb_tv: 0.1
+  lambda_sh_gray: 0.1
+  lambda_xcov: 0.5
